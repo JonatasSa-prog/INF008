@@ -1,8 +1,9 @@
+
+
 public class CorRGB {
     private int red;
     private int green;
     private int blue;
-    private double luminosidade;
     
     public CorRGB(int red, int green, int blue) {
         this.setRed(red);
@@ -10,11 +11,23 @@ public class CorRGB {
         this.setBlue(blue);
     }
 
+    public CorRGB(CorRGB cor){
+        this.setRed(cor.getRed());
+        this.setGreen(cor.getGreen());
+        this.setBlue(cor.getBlue());
+    }
+
+    public CorRGB(){
+        this.setRed(0);
+        this.setGreen(0);
+        this.setBlue(0);
+    }
+
     public int getRed() {
         return red;
     }
 
-    public void setRed(int red) {
+    private void setRed(int red) {
         if(red >= 0 && red <=255)
             this.red = red;
         else{
@@ -27,7 +40,7 @@ public class CorRGB {
         return green;
     }
 
-    public void setGreen(int green) {
+    private void setGreen(int green) {
         if(green >= 0 && green <= 255)
             this.green = green;
         else{
@@ -41,7 +54,7 @@ public class CorRGB {
         return blue;
     }
 
-    public void setBlue(int blue) {
+    private void setBlue(int blue) {
         if(blue >= 0 && blue <=255)
             this.blue = blue;
         else{
@@ -51,11 +64,63 @@ public class CorRGB {
     }
 
     public double getLuminosidade(){
-        return luminosidade = (this.getRed() * 0.3 + this.getGreen() * 0.59 + this.getBlue() * 0.11) / 255;  
+        return (this.getRed() * 0.3 + this.getGreen() * 0.59 + this.getBlue() * 0.11);  
     }
 
-    public void statlus(){
+    public CorRGB getRGB(){
+        return new CorRGB(this.getRed(), this.getGreen(), this.getBlue());
+    }
+
+    public String getHexa(){
+        String hex = String.format("#%02X%02X%02X", this.getRed(), this.getGreen(), this.getBlue());
+
+        return hex;
+    }
+
+    public boolean equals(CorRGB cor){
+
+        if(this.getRed() == cor.getRed() && 
+                this.getGreen() == cor.getGreen() &&
+                    this.getBlue() == cor.getBlue())
+            return true;
+
+        return false;
+    }
+
+    public void clarear(double num){
+        
+        double aux = num / 100;
+        
+        int auxRed = (int) (this.getRed() * aux);
+        int auxGreen = (int) (this.getGreen() * aux);
+        int auxBlue = (int) (this.getBlue() * aux);
+
+        this.setRed(this.getRed() - Math.round(auxRed));
+        this.setGreen(this.getGreen() - Math.round(auxGreen));
+        this.setBlue(this.getBlue() - Math.round(auxBlue));
+    }
+
+    public void escurecer(double num){
+        
+        double aux = num / 100;
+        System.out.println(aux);
+
+        int auxRed = (int) (this.getRed() * aux);
+        int auxGreen = (int) (this.getGreen() * aux);
+        int auxBlue = (int) (this.getBlue() * aux);
+
+        this.setRed(this.getRed() + Math.round(auxRed));
+        this.setGreen(this.getGreen() + Math.round(auxGreen));
+        this.setBlue(this.getBlue() + Math.round(auxBlue));
+    }
+
+    public CorRGB novoIgual(){
+        return new CorRGB(this);
+    }
+
+    public void status(){
         System.out.println("Red: " + this.getRed() + " Green: " + this.getGreen() + " Blue: " +this.getBlue() + " Luminosidade: " + this.getLuminosidade());
     }
+
 
 }    
