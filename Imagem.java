@@ -120,6 +120,15 @@ public class Imagem {
 
     public boolean fragmentoImagem(Imagem i){
 
+        Imagem aux = new Imagem(i.getAltura(),i.getLargura());
+        for(int x = 0; x < i.getAltura(); x++){
+            for(int y = 0; y < i.getLargura(); y++){
+                aux.modificarPixel(x, y, this.get(x, y));
+            }
+        }
+
+        if(aux.equals(i))
+            return true;
         
         return false;
     }
