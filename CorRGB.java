@@ -1,6 +1,6 @@
-
-
 public class CorRGB {
+
+
     private int red;
     private int green;
     private int blue;
@@ -29,11 +29,7 @@ public class CorRGB {
 
     private void setRed(int red) {
         if(red >= 0 && red <=255)
-            this.red = red;
-        else{
-            System.out.println("Error! Valor Incorreto, " + red + " não está dentro do conjunto numérico."); 
-            System.exit(0);
-        }
+            this.red = red;  
     }
 
     public int getGreen() {
@@ -42,12 +38,7 @@ public class CorRGB {
 
     private void setGreen(int green) {
         if(green >= 0 && green <= 255)
-            this.green = green;
-        else{
-            System.out.println("Error! Valor Incorreto, " + green + " não está dentro do conjunto numérico."); 
-            System.exit(0);
-        }
-        
+            this.green = green;   
     }
 
     public int getBlue() {
@@ -57,10 +48,6 @@ public class CorRGB {
     private void setBlue(int blue) {
         if(blue >= 0 && blue <=255)
             this.blue = blue;
-        else{
-            System.out.println("Error! Valor Incorreto, " + blue + " não está dentro do conjunto numérico."); 
-            System.exit(0);
-        }
     }
 
     public double getLuminosidade(){
@@ -77,6 +64,15 @@ public class CorRGB {
         return hex;
     }
 
+    public void setCinza(){
+        
+        int cinza = (int) Math.round(this.getLuminosidade());
+
+        this.setRed(cinza);
+        this.setGreen(cinza);
+        this.setBlue(cinza);
+    }
+
     public boolean equals(CorRGB cor){
 
         if(this.getRed() == cor.getRed() && 
@@ -87,7 +83,7 @@ public class CorRGB {
         return false;
     }
 
-    public void clarear(double num){
+    public void escurecer(double num){
         
         double aux = num / 100;
         
@@ -95,12 +91,16 @@ public class CorRGB {
         int auxGreen = (int) (this.getGreen() * aux);
         int auxBlue = (int) (this.getBlue() * aux);
 
-        this.setRed(this.getRed() - Math.round(auxRed));
-        this.setGreen(this.getGreen() - Math.round(auxGreen));
-        this.setBlue(this.getBlue() - Math.round(auxBlue));
+        if(num > 0 && num <= 100){
+            this.setRed(this.getRed() - Math.round(auxRed));
+            this.setGreen(this.getGreen() - Math.round(auxGreen));
+            this.setBlue(this.getBlue() - Math.round(auxBlue));
+        }else{
+            
+        }
     }
 
-    public void escurecer(double num){
+    public void clarear(double num){
         
         double aux = num / 100;
         System.out.println(aux);
@@ -109,9 +109,13 @@ public class CorRGB {
         int auxGreen = (int) (this.getGreen() * aux);
         int auxBlue = (int) (this.getBlue() * aux);
 
-        this.setRed(this.getRed() + Math.round(auxRed));
-        this.setGreen(this.getGreen() + Math.round(auxGreen));
-        this.setBlue(this.getBlue() + Math.round(auxBlue));
+        if(num > 0 && num <= 100){
+            this.setRed(this.getRed() + Math.round(auxRed));
+            this.setGreen(this.getGreen() + Math.round(auxGreen));
+            this.setBlue(this.getBlue() + Math.round(auxBlue));
+        }else{
+                
+        }
     }
 
     public CorRGB novoIgual(){
@@ -119,8 +123,9 @@ public class CorRGB {
     }
 
     public void status(){
-        System.out.println("Red: " + this.getRed() + " Green: " + this.getGreen() + " Blue: " +this.getBlue() + " Luminosidade: " + this.getLuminosidade());
+        System.out.println("Red: " + this.getRed() + " Green: " + this.getGreen() + " Blue: " +this.getBlue() + " Luminosidade: " + this.getLuminosidade() + " Hexadecimal " + this.getHexa());
     }
 
 
 }    
+
