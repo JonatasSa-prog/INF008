@@ -118,18 +118,27 @@ public class Imagem {
         return false;
     }
 
-    public boolean fragmentoImagem(Imagem i){
+    private void alocar(Imagem i,int auxA, int auxB){
 
+        for(int x = 0, a = auxA; x < i.getAltura() && a < this.getAltura(); x++, a++){
+            for(int y = 0, b = auxB; y < i.getLargura() && b < this.getLargura(); y++, b++){
+                this.modificarPixel(x, y, i.get(a, b));
+                
+            }
+        }
+    }
+
+    private boolean fragmentoImagem(Imagem i){
+        
         Imagem aux = new Imagem(i.getAltura(),i.getLargura());
-        for(int x = 0; x < i.getAltura(); x++){
-            for(int y = 0; y < i.getLargura(); y++){
-                aux.modificarPixel(x, y, this.get(x, y));
+        for(int x = 0; x < this.getAltura(); x++){
+            for(int y = 0; y < this.getLargura(); y++){
+                aux.alocar(this, x, y);
+                if(aux.equals(i))
+                    return true;
             }
         }
 
-        if(aux.equals(i))
-            return true;
-        
         return false;
     }
 }
