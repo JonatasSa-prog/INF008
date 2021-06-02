@@ -1,144 +1,193 @@
 public class Imagem {
-    public static final String PRETA = ("#000000");
-    public static final String BRANCA = ("#FFFFFF");
-    public static final String RED = ("#FF0000");
-    public static final String GREEN = ("#00FF00");
-    public static final String BLUE = ("#0000FF");
-
-    private CorRGB[][] nos;
-
-    public Imagem(int x, int y){
-        this.nos = new CorRGB[x][y];
-        this.criarImagem(x);
-    }
-
-    private void criarImagem(int x){
+    private Cor pixels[][];
+    private int altura;
+    private int largura;
     
-        for(int a = 0; a < x; a++){
-            for(int b = 0; b < this.nos[0].length; b++){
-                this.nos[a][b] = new CorRGB(255,255,255);
-            } 
+    private final int VALOR_MINIMO = 1;
+
+    public Imagem(int novaAltura, int novaLargura){
+        setLargura(novaLargura);
+        setAltura(novaAltura);
+        
+        this.pixels = new Cor[novaAltura][novaLargura];
+        
+        limparImagem();
+    }
+    
+    private boolean validarValor(int valor){
+        return valor >= VALOR_MINIMO;
+    }
+    
+    private int obterValorValido(int valor){
+        return validarValor(valor) ? valor : VALOR_MINIMO;
+    }
+    
+    private void setAltura(int novaAltura){
+        this.altura = obterValorValido(novaAltura);
+    }
+
+    private void setLargura(int novaLargura){
+        this.largura = obterValorValido(novaLargura);
+    }
+    
+    public int getAltura(){
+        return this.altura;
+    }
+
+    public int getLargura(){
+        return this.largura;
+    }
+    
+    public Cor getPixel(int aPos, int lPos) {
+        if ((aPos < 0 || aPos >= this.getAltura()) ||
+            (lPos < 0 || lPos >= this.getLargura())){
+            return null;
         }
+        
+        return this.pixels[aPos][lPos];
     }
-
-    public void modificarPixel(int x, int y, CorRGB cor){
-        this.nos[x][y] = new CorRGB(cor);
+    
+    public void setPixel(int aPos, int lPos, Cor pixel){
+        if ((aPos < 0 || aPos >= this.getAltura()) ||
+            (lPos < 0 || lPos >= this.getLargura())){
+            return;
+        }
+        
+        this.pixels[aPos][lPos] = pixel;
     }
-
-    public void modificarPixel(int x, int y, int red, int green, int blue){
-        this.nos[x][y] = new CorRGB(red,green,blue);
+    
+    public void setPixel(int aPos, int lPos, int vermelho, int verde, int azul){
+        this.setPixel(aPos, lPos, new Cor(vermelho, verde, azul));
     }
-
-    public CorRGB get(int x, int y){
-        return this.nos[x][y];   
+    
+    private void atualizarTamanho(){
+        this.setLargura(this.pixels[0].length);
+        this.setAltura(this.pixels.length);
     }
-
-    public void imagemCinza(){
-        for(int a = 0; a < this.nos.length; a++){
-            for(int b = 0; b < this.nos[0].length; b++){
-                if(this.nos[a][b].getHexa() != BRANCA){
-                    this.nos[a][b].setCinza();
-                }
+    
+    private void limparImagem(){
+        for (int a = 0; a < this.getAltura(); a++){
+            for (int l = 0; l < this.getLargura(); l++){
+                this.pixels[a][l] = Cor.BRANCA;
             }
         }
     }
-
-    public boolean equals(Imagem nos){
-
-        if(this.getAltura() != nos.getAltura() || this.getLargura() != nos.getLargura())
-            return false;
+    
+    public Imagem clone(){
+        Imagem clone = new Imagem(this.getAltura(), this.getLargura());
         
-        for(int a = 0; a < this.nos.length; a++){
-            for(int b = 0; b < this.nos[0].length; b++){
-                if(this.nos[a][b].equals(nos.get(a, b))){
-                    
-                }
-                else{
+        for (int a = 0; a < this.getAltura(); a++){
+            for (int l = 0; l < this.getLargura(); l++){
+                clone.setPixel(a, l, this.getPixel(a, l));
+            }
+        }
+        
+        return clone;
+    }
+    
+    public void rotacionarParaDireita(){
+        Cor novosPixels[][] = new Cor[this.getLargura()][this.getAltura()];
+        
+        for (int a = 0, nL = this.getAltura() - 1; a < this.getAltura(); a++, nL--){
+            for (int l = 0, nA = 0; l < this.getLargura(); l++, nA++){
+                novosPixels[nA][nL] = this.pixels[a][l];
+            }
+        }
+        
+        this.pixels = novosPixels;
+        this.atualizarTamanho();
+    }
+    
+    public boolean equals(Imagem img){
+        Imagem imgClone = img.clone();
+        int rotacoes = 0;
+        
+        while(rotacoes <= 3){
+            boolean mesmoTamanho = (imgClone.getAltura() == this.getAltura() && imgClone.getLargura() == this.getLargura());
+            
+            if (mesmoTamanho && this.compararImagens(imgClone)){
+                return true;
+            }
+            
+            imgClone.rotacionarParaDireita();
+            rotacoes++;
+        }
+        
+        return false;
+    }
+    
+    private boolean compararImagens(Imagem img){
+        for (int a = 0; a < this.getAltura(); a++){
+            for (int l = 0; l < this.getLargura(); l++){
+                if (!this.getPixel(a, l).verificaIgualdade(img.getPixel(a, l))){
                     return false;
                 }
             }
         }
         return true;
     }
-
-    public void rotacionarMatrizHorario() {
-        int largura = getAltura();
-        int altura = getLargura();
-        CorRGB[][] ret = new CorRGB[altura][largura];
-
-        for (int i=0; i<altura; i++) {
-            for (int j=0; j<largura; j++) {
-                ret[i][j] = this.nos[largura - j - 1][i];
+    
+    public Imagem obterCinza(){
+        Imagem imagemCinza = new Imagem(this.getAltura(), this.getLargura());
+        
+        for (int a = 0; a < this.getAltura(); a++){
+            for (int l = 0; l < this.getLargura(); l++){
+                Cor corCinza = this.getPixel(a, l).gerarCinzaEquivalente();
+                imagemCinza.setPixel(a, l, corCinza);
             }
-         }
-
-        if(altura == largura){
-            for (int i=0; i<altura; i++) {
-                for (int j=0; j<largura; j++) {
-                    this.nos[i][j] = ret[i][j];
-                }
-            }
-        }else{
-            this.nos = new CorRGB[ret.length][ret[0].length];
-                for (int i=0; i<altura; i++) {
-                    for (int j=0; j<largura; j++) {
-                        this.nos[i][j] = ret[i][j];
-                }
-            }
-        }     
+        }
+        
+        return imagemCinza;
     }
-
-    public boolean fragmento(Imagem i){
-        for(int x = 0; x < 4; x++){
-            if(this.fragmentoImagem(i) == true)
+    
+    public boolean possuiComoFragmento(Imagem frag){
+        Imagem fragClone = frag.clone();
+        int rotacoes = 0;
+        
+        while(rotacoes <= 3){
+            boolean suportaFragmento = (fragClone.getAltura() <= this.getAltura() && fragClone.getLargura() <= this.getLargura());
+            
+            if (suportaFragmento && this.possui(fragClone)){
                 return true;
-            i.rotacionarMatrizHorario();
-        }
-        return false;
-    }
-
-    private boolean fragmentoImagem(Imagem i){
-        
-        Imagem aux = new Imagem(i.getAltura(),i.getLargura());
-        for(int x = 0; x < this.getAltura(); x++){
-            for(int y = 0; y < this.getLargura(); y++){
-                aux.alocar(this, x, y);
-                if(aux.equals(i))
-                    return true;
             }
+            
+            fragClone.rotacionarParaDireita();
+            rotacoes++;
         }
-
+        
         return false;
     }
-
-    private void alocar(Imagem i,int auxA, int auxB){
-
-        for(int x = 0, a = auxA; x < i.getAltura() && a < this.getAltura(); x++, a++){
-            for(int y = 0, b = auxB; y < i.getLargura() && b < this.getLargura(); y++, b++){
-                this.modificarPixel(x, y, i.get(a, b));
+    
+    private boolean possui(Imagem frag){
+        int aI, lI, aF, lF;
+        boolean igual;
+        
+        for (aI = 0; aI < this.getAltura(); aI++){
+            boolean cabeNaAltura = frag.getAltura() <= (this.getAltura() - aI);
                 
+            if (!cabeNaAltura){
+                break;
+            }
+            
+            for (lI = 0; lI < this.getLargura(); lI++){
+                boolean cabeNaLargura = frag.getLargura() <= (this.getLargura() - lI);
+                
+                if (!cabeNaLargura){
+                    break;
+                }
+                
+                for (aF = 0, igual = true; aF < frag.getAltura() && igual; aF++){
+                    for (lF = 0; lF < frag.getLargura() && igual; lF++){
+                        igual = this.getPixel(aI + aF, lI + lF).verificaIgualdade(frag.getPixel(aF, lF));
+                    }
+                }
+                
+                if (igual){
+                    return true;
+                }
             }
         }
-    }
 
-    private int getLargura(){
-        int largura = this.nos[0].length;
-
-        return largura;
-    }
-
-    private int getAltura(){
-        int altura = this.nos.length;
-        
-        return altura;
-    }
-
-    public void status(){
-
-        for(int a = 0; a < this.nos.length; a++){
-            for(int b = 0; b < this.nos[0].length; b++){
-                System.out.println("Posição: " + a + " " + b + " = " + this.nos[a][b].getHexa());
-            }  
-        }
+        return false;
     }
 }
